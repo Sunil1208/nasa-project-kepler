@@ -12,28 +12,34 @@ function isHabitablePlanet(planet) {
         & planet["koi_prad"] < 1.6; // comparision of the size of planet with reference to radiys of earth
 };
 
-fs.createReadStream(data_file_path)
-    .pipe(parse({
-        comment: "#",
-        columns: true,
-    }))
-    .on("data", (data) => {
-        if(isHabitablePlanet(data)){
-            habitablePlanets.push(data);
-        }
-    })
-    .on("error", (err) => {
-        console.log("error");
-        console.log(err);
-    })
-    .on("end", () => {
-        console.log(habitablePlanets.map((planet) => {
-            return planet["kepler_name"]
-        }));
-        console.log("No of potential planets: ", habitablePlanets.length);
-        console.log("done");
+function loadPlanetsData() {
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(data_file_path)
+        .pipe(parse({
+            comment: "#",
+            columns: true,
+        }))
+        .on("data", (data) => {
+            if(isHabitablePlanet(data)){
+                habitablePlanets.push(data);
+            }
+        })
+        .on("error", (err) => {
+            console.log("error");
+            console.log(err);
+            reject(err);
+        })
+        .on("end", () => {
+            console.log(habitablePlanets.map((planet) => {
+                return planet["kepler_name"]
+            }));
+            // console.log("No of potential planets: ", habitablePlanets.length);
+            resolve();
+        });
     });
+};
 
 module.exports = {
+    loadPlanetsData,
     planets: habitablePlanets,
 };
