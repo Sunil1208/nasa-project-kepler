@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const morgan = require("morgan");
 
 const { corsOptions } = require("./config");
 
@@ -14,6 +15,7 @@ const app = express();
 // }));
 
 app.use(cors(corsOptions));
+app.use(morgan("combined"));
 app.use(express.static(path.join(__dirname, "..", "public"))); // serving the frontend build as staic file (frontend production)
 app.use(express.json());
 app.use("/planets", planetsRouter);
