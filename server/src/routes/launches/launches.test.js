@@ -57,7 +57,7 @@ describe("Test POST /launch", () => {
             error: "Missing required launch property",
         });
     });
-    
+
     test("It should catch invalid dates", async () => {
         const response = await request(app)
             .post("/launches")
@@ -68,4 +68,24 @@ describe("Test POST /launch", () => {
             error: "Invalid launch date",
         });
     });
+});
+
+describe("Test /DELETE launches", () => {
+    const validLaunchId = 100;
+    const invalidLaunchId = -22;
+    test("It should respond with a 200 success", async () => {
+        const resonse = await request(app)
+            .delete(`/launches/${validLaunchId}`)
+            .expect(200);
+    });
+
+    test("It should respond with a 400 failure", async () => {
+        const response = await request(app)
+            .delete(`/launches/${invalidLaunchId}`)
+            .expect(400);
+
+        expect(response.body).toStrictEqual({
+            err: "Launch not found",
+        });
+    })
 });
